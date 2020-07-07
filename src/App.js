@@ -1,16 +1,24 @@
 import React, {useState} from 'react';
 import {TaskRow} from './components/TaskRow'
-
+import {TaskBanner} from './components/TaskBanner'
+import {TaskCreator} from './components/TaskCreator'
+import {VisibilityControl} from './components/VisibilityControl'
 
 function App() {
 
-  const [userName, setUserName] = useState('Francisco')
+  const [userName, setUserName] = useState('Francisco Tarantuviez')
   const [taskItems, setTaskItems] = useState([
     {name: 'Task One', done: false},
     {name: 'Task Two', done: false},
     {name: 'Task Three', done: true},
     {name: 'Task Four', done: false}
   ])
+  const [showCompleted, setShowCompleted] = useState(true)
+
+
+  const createNewTask = taskName =>{
+    if(!taskItems.find(t => t.name === taskName)) setTaskItems([...taskItems, {name: taskName, done: false}])
+  }
   
   const toggleTask = task => 
     setTaskItems(taskItems.map(t => (t.name === task.name ? {...t, done: !t.done} : t)))
@@ -23,8 +31,10 @@ function App() {
 
   return (
     <div className="App">
-     <h1>fasdf</h1>
-     <table>
+     <TaskBanner property={userName} taskItems={taskItems} />
+
+     <TaskCreator callback={createNewTask} />
+     <table className="table table-striped table-border">
 
       <thead>
        <tr>
@@ -38,6 +48,17 @@ function App() {
       </tbody>
 
      </table>
+
+      <div className="bg-secondary-text-white text-center p-2">
+
+        <VisibilityControl
+          description="Completed Task" 
+          isChecked={showCompleted}
+          callback={checked => setShowCompleted(checked)}
+        />
+
+      </div>
+
     </div>
   );
 }
