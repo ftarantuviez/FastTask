@@ -13,6 +13,7 @@ export const VisibilityControl = props => {
             <label htmlFor="form-check-label">
                 Show {props.description}
             </label>
+
         </div>
     )
 }

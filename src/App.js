@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {TaskRow} from './components/TaskRow'
 import {TaskBanner} from './components/TaskBanner'
 import {TaskCreator} from './components/TaskCreator'
@@ -15,6 +15,25 @@ function App() {
   ])
   const [showCompleted, setShowCompleted] = useState(true)
 
+  useEffect(() => {
+    let data = localStorage.getItem('tasks');
+    if(data !== null){
+      setTaskItems(JSON.parse(data))
+    } else{
+      
+      setTaskItems([
+        {name: 'Task One LocalS', done: false},
+        {name: 'Task Two Locals', done: false},
+        {name: 'Task Three LocalS', done: true},
+        {name: 'Task Four LocalS', done: false}
+      ])
+      setShowCompleted(true)
+    }
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem('tasks', JSON.stringify(taskItems))
+  }, [taskItems])
 
   const createNewTask = taskName =>{
     if(!taskItems.find(t => t.name === taskName)) setTaskItems([...taskItems, {name: taskName, done: false}])
@@ -23,7 +42,10 @@ function App() {
   const toggleTask = task => 
     setTaskItems(taskItems.map(t => (t.name === task.name ? {...t, done: !t.done} : t)))
 
-  const taskTableRows = () => taskItems.map(task =>(
+  const taskTableRows = (doneValue) => 
+    taskItems
+    .filter(task => task.done === doneValue)
+    .map(task =>(
       <TaskRow task={task} key={task.name} toggleTask={toggleTask}/>
     ))
   
@@ -44,7 +66,7 @@ function App() {
       </thead>
       
       <tbody>
-        {taskTableRows()}
+        {taskTableRows(false)}
       </tbody>
 
      </table>
@@ -58,6 +80,22 @@ function App() {
         />
 
       </div>
+
+      {
+        showCompleted && (
+            <table className="table table-striped table-bordered">
+                <thead>
+                  <tr>
+                    <th>Description</th>
+                    <th>Done</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {taskTableRows(true)}
+                </tbody>
+            </table>
+        )
+      }
 
     </div>
   );
